@@ -1,0 +1,48 @@
+resilience4j.circuitbreaker:
+  instances:
+    PAYMENT_CALL:
+      registerHealthIndicator: true
+      slidingWindowSize: 100
+      minimumNumberOfCalls: 5
+      failureRateThreshold: 30
+      recordExceptions: org.resilience4j.demo.exception.ExternalServiceUnavailableException
+      ignoreExceptions: org.resilience4j.demo.exception.InsufficientCreditException
+    THEATRE_CALL:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: COUNT_BASED
+      minimumNumberOfCalls: 5
+      waitDurationInOpenState: 50s
+      failureRateThreshold: 30
+      eventConsumerBufferSize: 10
+      recordExceptions: org.resilience4j.demo.exception.ExternalServiceUnavailableException
+resilience4j.bulkhead:
+  instances:
+    PAYMENT_CALL:
+      maxConcurrentCalls: 10
+    THEATRE_CALL:
+      maxWaitDuration: 10ms
+      maxConcurrentCalls: 5
+resilience4j.ratelimiter:
+  instances:
+    BOOKING_CALL:
+      limitForPeriod: 5
+      limitRefreshPeriod: 1s
+      timeoutDuration: 0
+      registerHealthIndicator: true
+      eventConsumerBufferSize: 100
+resilience4j.retry:
+  instances:
+    PAYMENT_CALL:
+      maxAttempts: 3
+      waitDuration: 10s
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+      retryExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - java.io.IOException
+        - org.resilience4j.demo.exception.ExternalServiceUnavailableException
+      ignoreExceptions:
+        - org.resilience4j.demo.exception.InsufficientCreditException
+
